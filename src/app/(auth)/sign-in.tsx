@@ -1,5 +1,5 @@
 import useSocialAuth from "@/hooks/useSocialAuth";
-import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome, FontAwesome6 } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -17,22 +17,23 @@ export default function SignInScreen() {
       {/* decorative elements */}
       <View className="h-56 w-56 absolute -left-16 top-12 rounded-full bg-primary/80 dark:bg-background/40"></View>
       <View className="h-72 w-72 absolute right-[-74px] top-40 rounded-full bg-primary/70 dark:bg-background/35"></View>
-      <View className="px-6 pt-4">
-        <Text className="text-center text-5xl font-extrabold tracking-tight text-primary-foreground dark:text-foreground uppercase font-mono">
-          Grocify
-        </Text>
+      <View>
+        <View className="px-6 pt-4">
+          <Text className="text-center text-5xl font-extrabold tracking-tight text-primary-foreground dark:text-foreground uppercase font-mono">
+            Grocify
+          </Text>
 
-        <Text className="mt-1 text-center text-sm text-primary-foreground dark:text-foreground/70">
-          Plan smarter. Shop happier
-        </Text>
+          <Text className="mt-1 text-center text-sm text-primary-foreground dark:text-foreground/70">
+            Plan smarter. Shop happier
+          </Text>
 
-        <View className="border border-white/20 bg-white/10 p-5 mt-6 rounded-[36px] ">
-          <Image
-            source={require("../../../assets/projectImage/auth.png")}
-            style={{ width: "100%", height: 300 }}
-          />
+          <View className="border border-white/20 bg-white/10 p-5 mt-6 rounded-[36px] ">
+            <Image
+              source={require("../../../assets/projectImage/auth.png")}
+              style={{ width: "100%", height: 300 }}
+            />
+          </View>
         </View>
-
         <View className="mt-8 rounded-t-[36px] bg-card px-8 pt-6 pb-8">
           <View className="self-center rounded-full bg-secondary px-3 py-1">
             <Text className="text-xs font-semibold uppercase tracking-[1px] text-secondary-foreground">
@@ -65,7 +66,42 @@ export default function SignInScreen() {
 
               <FontAwesome name="angle-right" size={18} color="#5f6e66" />
             </Pressable>
+
+            <Pressable
+              disabled={isLoading}
+              onPress={() => handleSocialAuth("oauth_github")}
+              className={`mb-3 h-14 flex-row items-center rounded-2xl border border-border bg-card px-4 active:opacity-90 ${isLoading ? "opacity-70" : ""}`}
+            >
+              <View className="h-8 w-8 items-center justify-center rounded-full bg-white">
+                <FontAwesome name="github" size={24} color="#111" />
+              </View>
+              <Text className="ml-3 flex-1 font-semibold text-card-foreground">
+                {isGitHubClicked
+                  ? "Connecting GitHub..."
+                  : "Continue with GitHub"}
+              </Text>
+
+              <FontAwesome name="angle-right" size={18} color="#5f6e66" />
+            </Pressable>
+
+            <Pressable
+              disabled={isLoading}
+              onPress={() => handleSocialAuth("oauth_apple")}
+              className={`mb-3 h-14 flex-row items-center rounded-2xl border border-border bg-card px-4 active:opacity-90 ${isLoading ? "opacity-70" : ""}`}
+            >
+              <View className="h-8 w-8 items-center justify-center rounded-full bg-white">
+                <FontAwesome name="apple" size={24} color="#111" />
+              </View>
+              <Text className="ml-3 flex-1 font-semibold text-card-foreground">
+                {isAppleClicked ? "Connecting Apple..." : "Continue with Apple"}
+              </Text>
+
+              <FontAwesome name="angle-right" size={18} color="#5f6e66" />
+            </Pressable>
           </View>
+          <Text className="mt-3 text-center text-sm leading-5 text-muted-foreground">
+            By continuing , you agree to our terms and privacy policy.{" "}
+          </Text>
         </View>
       </View>
     </SafeAreaView>
