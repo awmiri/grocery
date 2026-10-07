@@ -21,7 +21,7 @@ export type CreateItemInput = {
   priority: GroceryPriority;
 };
 
-type ItemsResponse = { item: GroceryItem[] };
+type ItemsResponse = { items: GroceryItem[] };
 type ItemResponse = { item: GroceryItem };
 
 type GroceryStore = {
@@ -42,15 +42,23 @@ export const useGroceryStore = create<GroceryStore>((set, get) => ({
 
   loadItems: async () => {
     set({ isLoading: true, error: null });
+
     try {
       const res = await fetch("/api/items");
+
+      if (!res.ok) {
+        throw new Error(`Request failed (${res.status})`);
+      }
+
       const payload = (await res.json()) as ItemsResponse;
 
-      if (!res.ok) throw new Error(`request failed (${res.status})`);
-      set({ items: payload.item });
+      set({ items: payload.items });
     } catch (error) {
-      console.error("error loading items:", error);
-      set({ error: "something went wrong" });
+      console.error("❌ fetch error:", error);
+
+      set({
+        error: "Something went wrong while loading items",
+      });
     } finally {
       set({ isLoading: false });
     }
@@ -72,6 +80,7 @@ export const useGroceryStore = create<GroceryStore>((set, get) => ({
       });
 
       const payload = (await res.json()) as ItemResponse;
+      console.log("📦 response body:", payload);
       if (!res.ok) throw new Error(`Request failed (${res.status})`);
       set((state) => ({ items: [payload.item, ...state.items] }));
     } catch (error) {
@@ -86,8 +95,10 @@ export const useGroceryStore = create<GroceryStore>((set, get) => ({
     set({ error: null });
 
     try {
+      console.log("🆔 updating item:", id);
+      console.log("🔢 new quantity:", nextQuantity);
       const res = await fetch(`/api/items/${id}`, {
-        method: "POST",
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ quantity: nextQuantity }),
       });
@@ -115,8 +126,8 @@ export const useGroceryStore = create<GroceryStore>((set, get) => ({
     set({ error: null });
 
     try {
-      const res = await fetch(`api/items/${id}`, {
-        method: "POST",
+      const res = await fetch(`/api/items/${id}`, {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ purchased: nextPurchased }),
       });
@@ -134,6 +145,36 @@ export const useGroceryStore = create<GroceryStore>((set, get) => ({
       set({ error: "Something went wrong on purchased" });
     }
   },
-  removeItem: async (id) => {},
-  clearPurchased: async () => {},
+
+  removeItem: async (id) => {
+    set({ error: null });
+
+    try {
+      const res = await fetch(`/api/items/${id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error(`Request failed ${res.status}`);
+
+      set((state) => ({ items: state.items.filter((item) => item.id !== id) }));
+    } catch (error) {
+      console.error("error removing item:", error);
+      set({ error: "Something went wrong for del item" });
+    }
+  },
+
+  clearPurchased: async () => {
+    set({ error: null });
+
+    try {
+      const res = await fetch("/api/items/clear=purchased", { method: "POST" });
+
+      if (!res.ok) throw new Error(`Request filed ${res.status}`);
+
+      const items = get().items.filter((item) => !item.purchased);
+      set({ items });
+    } catch (error) {
+      console.error("Error clearing purchased");
+      set({ error: "Something went wrong on purchased part" });
+    }
+  },
 }));

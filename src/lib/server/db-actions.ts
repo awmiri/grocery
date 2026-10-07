@@ -57,7 +57,7 @@ export const updateGroceryItemQuantity = async (
     .where(eq(groceryItems.id, id))
     .returning();
 
-  if (rows.length) return null;
+  if (!rows.length) return null;
 
   return rows[0];
 };

@@ -1,18 +1,25 @@
 import { createGroceryItem, listGroceryItems } from "@/lib/server/db-actions";
 
 export async function GET() {
+  console.log("🔥 API GET /api/items called");
+
   try {
+    console.log("⏳ trying to connect database...");
+
     const items = await listGroceryItems();
+
+    console.log("✅ database returned:", items);
 
     return Response.json({ items });
   } catch (error) {
+    console.error("❌ DATABASE ERROR:", error);
+
     const message =
       error instanceof Error ? error.message : "Failed to fetch items";
 
     return Response.json({ error: message }, { status: 500 });
   }
 }
-
 export async function POST(request: Request) {
   try {
     const body = await request.json();
