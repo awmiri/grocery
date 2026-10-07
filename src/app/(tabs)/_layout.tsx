@@ -7,7 +7,7 @@ import { useEffect } from "react";
 
 const TabsLayout = () => {
   const { isSignedIn, isLoaded } = useAuth();
-  const { loadItems } = useGroceryStore();
+  const { loadItems, items } = useGroceryStore();
   const { colorScheme } = useColorScheme();
   useEffect(() => {
     loadItems();
@@ -35,7 +35,9 @@ const TabsLayout = () => {
           }}
           md="list"
         />
-        <NativeTabs.Trigger.Badge>+9</NativeTabs.Trigger.Badge>
+        <NativeTabs.Trigger.Badge>
+          {items.length > 0 ? `+${items.length}` : "0"}
+        </NativeTabs.Trigger.Badge>
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="planner">

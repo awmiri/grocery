@@ -1,36 +1,38 @@
+import CompletedItems from "@/component/List/CompletedItems";
 import ListHeroCard from "@/component/List/ListHeroCard";
 import PendingItemCard from "@/component/List/PendingItemCard";
 import TabScreenBackGround from "@/component/TabScreenBackGround";
-import { ScrollView, Text, View } from "react-native";
+import { FlatList, Text, View } from "react-native";
 import { useGroceryStore } from "../../store/grocery-store";
 
 const ListScreen = () => {
-  const { items } = useGroceryStore();
+  const { items, isLoading } = useGroceryStore();
   const pendingItems = items.filter((item) => !item.purchased);
 
-  console.log("items : ", items);
-
   return (
-    <ScrollView
-      className="flex-1 bg-background py-4"
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ padding: 20, gap: 14 }}
-    >
-      <TabScreenBackGround />
-      <ListHeroCard />
-
-      <View className="flex-row items-center justify-between px-1">
-        <Text className="text-sm font-semibold uppercase tracking-[1px] text-muted-foreground">
-          Shopping items
-        </Text>
-        <Text className="text-sm text-muted-foreground">
-          {pendingItems.length} active
-        </Text>
-      </View>
-      {pendingItems.map((item) => (
-        <PendingItemCard key={item.id} item={item} />
-      ))}
-    </ScrollView>
+    <FlatList
+      className="flex-1 bg-background"
+      data={pendingItems}
+      contentInsetAdjustmentBehavior="automatic"
+      keyExtractor={(item) => item.id}
+      renderItem={({ item }) => <PendingItemCard item={item} />}
+      contentContainerStyle={{ gap: 14, padding: 20 }}
+      ListHeaderComponent={
+        <View style={{ gap: 14 }}>
+          <TabScreenBackGround />
+          <ListHeroCard />
+          <View className="flex-row items-center justify-between px-1">
+            <Text className="text-sm font-semibold uppercase tracking-[1px] text-muted-foreground">
+              Shopping Item
+            </Text>
+            <Text className="text-sm text-muted-foreground">
+              {pendingItems.length} active
+            </Text>
+          </View>
+        </View>
+      }
+      ListFooterComponent={<CompletedItems />}
+    />
   );
 };
 
