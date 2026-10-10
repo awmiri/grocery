@@ -1,11 +1,11 @@
 import {
-    GroceryCategory,
-    GroceryPriority,
-    useGroceryStore,
+  GroceryCategory,
+  GroceryPriority,
+  useGroceryStore,
 } from "@/store/grocery-store";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { useState } from "react";
-import { Text, TextInput, View } from "react-native";
+import { Alert, Pressable, Text, TextInput, View } from "react-native";
 const categories: GroceryCategory[] = [
   "Bakery",
   "Dairy",
@@ -13,18 +13,18 @@ const categories: GroceryCategory[] = [
   "Produce",
   "Snacks",
 ];
-const priority: GroceryPriority[] = ["high", "low", "medium"];
+const priorityItems: GroceryPriority[] = ["low", "medium", "high"];
 const CategoryIcons = {
-  produce: "leaf",
+  Produce: "leaf",
   Dairy: "cow",
   Bakery: "bread-slice",
-  pantry: "box-open",
-  Snacks: "cookies-bite",
+  Pantry: "box-open",
+  Snacks: "cookie-bite",
 };
 const PlanerFormCard = () => {
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState("1");
-  const [Category, setCategory] = useState<GroceryCategory>("Dairy");
+  const [Category, setCategory] = useState<GroceryCategory>("Bakery");
   const [priority, setPriority] = useState<GroceryPriority>("low");
 
   const { error, addItem } = useGroceryStore();
@@ -35,13 +35,15 @@ const PlanerFormCard = () => {
     setQuantity(value.replace(/[^0-9]/g, ""));
   };
 
-  const reateItem = async () => {
+  const createItem = async () => {
     await addItem({
       name: name.trim(),
       category: Category,
       priority,
       quantity: Number(quantity),
     });
+
+    Alert.alert("Success", "Item Create Successfully");
 
     setName("");
     setQuantity("1");
@@ -76,6 +78,88 @@ const PlanerFormCard = () => {
           placeholderTextColor="#8aa397"
         />
       </View>
+
+      {/* CATEGORIES */}
+      <Text className="text-sm font-semibold text-foreground">Category</Text>
+      <View className="mt-2 flex-row flex-wrap gap-2">
+        {categories.map((option) => {
+          const active = option === Category;
+          return (
+            <Pressable
+              key={option}
+              onPress={() => setCategory(option)}
+              className={`flex-row items-center rounded-full px-4 py-2 ${active ? "bg-primary" : "bg-secondary"} transition-all duration-300`}
+            >
+              <FontAwesome6
+                name={CategoryIcons[option]}
+                size={14}
+                color={active ? "#fff" : "#486856"}
+              />
+              <Text
+                className={`ml-2 text-sm font-semibold ${active ? "text-primary-foreground" : "text-secondary-foreground"}`}
+              >
+                {option}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
+
+      {/* PRIORITY */}
+      <Text className="text-sm font-semibold text-foreground">Priority</Text>
+      <View className="mt-2 flex-row flex-wrap gap-2">
+        {priorityItems.map((priorityItem) => {
+          const active = priorityItem === priority;
+          const Icon =
+            priorityItem === "high"
+              ? "bolt"
+              : priorityItem === "medium"
+                ? "compass"
+                : "seedling";
+          return (
+            <Pressable
+              key={priorityItem}
+              onPress={() => setPriority(priorityItem)}
+              className={`flex-row items-center rounded-full px-4 py-2 ${active ? "bg-primary" : "bg-secondary"} transition-all duration-300`}
+            >
+              <FontAwesome6
+                name={Icon}
+                size={14}
+                color={active ? "#fff" : "#486856"}
+              />
+              <Text
+                className={`ml-2 text-sm font-semibold ${active ? "text-primary-foreground" : "text-secondary-foreground"}`}
+              >
+                {priorityItem}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
+
+      <Pressable
+        className={`mt-5 flex-row items-center justify-center rounded-2xl py-3 ${canCreate ? "bg-primary" : "bg-muted"}`}
+        onPress={createItem}
+        disabled={!canCreate}
+      >
+        <FontAwesome6
+          name="plus"
+          size={14}
+          color={canCreate ? "#ffffff" : "#7a9386"}
+        />
+        <Text
+          className={`ml-2 text-base font-semibold ${canCreate ? "text-primary-foreground" : "text-muted-foreground"}`}
+        >
+          Add to grocery List
+        </Text>
+      </Pressable>
+      {error ? (
+        <View className="mt-3 rounded-2xl border border-destructive bg-destructive px-3 py-2">
+          <Text className="text-sm text-white text-center uppercase">
+            {error}
+          </Text>
+        </View>
+      ) : null}
     </View>
   );
 };

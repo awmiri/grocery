@@ -78,6 +78,7 @@ export const useGroceryStore = create<GroceryStore>((set, get) => ({
           priority: input.priority,
         }),
       });
+      console.log("response", res);
 
       const payload = (await res.json()) as ItemResponse;
       console.log("📦 response body:", payload);
