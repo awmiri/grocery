@@ -1,4 +1,6 @@
 import InsightCategoriesSection from "@/component/insite/InsightCategoriesSection";
+import InsightClearTheHoleItems from "@/component/insite/InsightClearTheHoleItems";
+import InsightPrioritySection from "@/component/insite/InsightPrioritySection";
 import InsightStatsSection from "@/component/insite/InsightStatsSection";
 import UserProfile from "@/component/insite/UserProfile";
 import TabScreenBackGround from "@/component/TabScreenBackGround";
@@ -16,8 +18,8 @@ const InsightsScreen = () => {
       <UserProfile />
       <InsightStatsSection />
       <InsightCategoriesSection />
-      {/* <InsightPrioritySection /> */}
-      {/* <InsightClearButton /> */}
+      <InsightPrioritySection />
+      <InsightClearTheHoleItems />
     </ScrollView>
   );
 };
